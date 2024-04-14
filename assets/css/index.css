@@ -59,7 +59,7 @@ body, html {
 
 .info {
     text-wrap: pretty; 
-    font-size: 1.3vw;
+    font-size: 1.1vw;
 }
 
 @media screen and (max-width: 600px) {
