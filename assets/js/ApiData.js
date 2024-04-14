@@ -1,5 +1,6 @@
 const matchTable = document.getElementById("matches");
 const liveStream = document.getElementById("live");
+const twitchStream = document.getElementById("twitchStream");
 const noStream = document.getElementById("noStream");
 
 const eventKey = "2024cur"
@@ -24,6 +25,17 @@ async function showStream(){
             const webcast = stream.webcasts[i];
             if(webcast.type == "youtube"){
                 liveStream.src = `https://www.youtube.com/embed/${webcast.channel}`
+                break
+            }
+        };
+    }
+    else if(stream.webcasts.length > 0){
+        noStream.hidden = true;
+        twitchStream.hidden = false;
+        for (let i = 0; i < stream.webcasts.length; i++) {
+            const webcast = stream.webcasts[i];
+            if(webcast.type == "twitch"){
+                twitchStream.src = `https://player.twitch.tv/?channel=${webcast.channel}&parent=worlds.mountierobotics.org`
                 break
             }
         };
