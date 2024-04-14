@@ -59,7 +59,8 @@ body, html {
 
 .info {
     text-wrap: pretty; 
-    font-size: 1.1vw;
+    display: table;
+    font-size: 95%
 }
 
 @media screen and (max-width: 600px) {
@@ -70,7 +71,7 @@ body, html {
         width: 100%;
     }
     .info { 
-        font-size: 3vw;
+        font-size: 85%
     }
 }
 
