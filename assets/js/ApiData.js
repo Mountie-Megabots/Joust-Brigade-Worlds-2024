@@ -8,7 +8,7 @@ const eventKey = "2024cur"
 
 const teamKey = "frc7197"
 
-// showStream()
+showStream()
 
 showMatches()
 
