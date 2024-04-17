@@ -1,4 +1,4 @@
-async () => console.log(await MakeVisitApiRequest());
+MakeVisitApiRequest();
 
 async function MakeVisitApiRequest()
 {
