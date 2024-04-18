@@ -12,29 +12,29 @@ showStream()
 
 showMatches()
 
-async function showStream(){
+async function showStream() {
 
     const stream = await MakeBlueApiRequest(`/event/${eventKey}`)
 
     console.log(stream.webcasts)
 
-    if(stream.webcasts.length > 1){
+    if (stream.webcasts.length > 1) {
         noStream.hidden = true;
         liveStream.hidden = false;
         for (let i = 0; i < stream.webcasts.length; i++) {
             const webcast = stream.webcasts[i];
-            if(webcast.type == "youtube"){
+            if (webcast.type == "youtube") {
                 liveStream.src = `https://www.youtube.com/embed/${webcast.channel}`
                 break
             }
         };
     }
-    else if(stream.webcasts.length > 0){
+    else if (stream.webcasts.length > 0) {
         noStream.hidden = true;
         twitchStream.hidden = false;
         for (let i = 0; i < stream.webcasts.length; i++) {
             const webcast = stream.webcasts[i];
-            if(webcast.type == "twitch"){
+            if (webcast.type == "twitch") {
                 twitchStream.src = `https://player.twitch.tv/?channel=${webcast.channel}&parent=worlds.mountierobotics.org`
                 break
             }
@@ -43,23 +43,94 @@ async function showStream(){
 
 }
 
-async function showMatches(){
+async function showMatches() {
 
     const ourMatches = await MakeBlueApiRequest(`/team/${teamKey}/event/${eventKey}/matches`);
 
+    let qM = []
+    let sfM = []
+    let fM = []
+
+    ourMatches.forEach(match => {
+        if(match.comp_level == "qm"){
+            qM.push(match)
+        }
+        if(match.comp_level == "sf"){
+            sfM.push(match)
+        }
+        if(match.comp_level == "f"){
+            fM.push(match)
+        }
+    });
+
+    qM.sort((a, b) => a.value - b.value);
+
+    qM.sort((a, b) => {
+        const numA = a.match_number;
+        const numB = b.match_number;
+
+        if (numA < numB) {
+            return -1;
+        }
+        if (numA > numB) {
+            return 1;
+        }
+
+        // must be equal
+        return 0;
+    });
+
+    sfM.sort((a, b) => a.value - b.value);
+
+    sfM.sort((a, b) => {
+        const numA = a.set_number;
+        const numB = b.set_number;
+
+        if (numA < numB) {
+            return -1;
+        }
+        if (numA > numB) {
+            return 1;
+        }
+
+        // must be equal
+        return 0;
+    });
+
+    fM.sort((a, b) => a.value - b.value);
+
+    fM.sort((a, b) => {
+        const numA = a.match_number;
+        const numB = b.match_number;
+
+        if (numA < numB) {
+            return -1;
+        }
+        if (numA > numB) {
+            return 1;
+        }
+
+        // must be equal
+        return 0;
+    });
+
+    let sortedMatches = qM.concat(sfM, fM)
+
+    console.log(sortedMatches)
+
     console.log(ourMatches.length)
 
-    if(ourMatches.length == 0){
+    if (ourMatches.length == 0) {
         console.log("No Matches Yet")
         matchTable.innerHTML += "<tr><td>Event Hasn't Started Yet</td></tr><tr><td>Please Check Back Later</td></tr>";
-    }else{
+    } else {
         let q = "";
         let sf = "";
         let f = "";
 
-        ourMatches.forEach(match => {
+        sortedMatches.forEach(match => {
 
-            if(match.comp_level == "qm"){
+            if (match.comp_level == "qm") {
                 q += "<tr>"
 
                 try {
@@ -70,75 +141,75 @@ async function showMatches(){
 
                 q += `<td>Q ${match.match_number}</td>`
 
-                + "<td style=\"color: red;\">";
-                
-                if(String(match.alliances.red.team_keys[0]).substring(3) == "7197"){
+                    + "<td style=\"color: red;\">";
+
+                if (String(match.alliances.red.team_keys[0]).substring(3) == "7197") {
                     q += "<span style=\"color: white;\">7197</span>"
                 }
-                else{
+                else {
                     q += String(match.alliances.red.team_keys[0]).substring(3)
                 }
-                
-                if(String(match.alliances.red.team_keys[1]).substring(3) == "7197"){
+
+                if (String(match.alliances.red.team_keys[1]).substring(3) == "7197") {
                     q += ",<span style=\"color: white;\">7197</span>"
                 }
-                else{
+                else {
                     q += "," + String(match.alliances.red.team_keys[1]).substring(3)
                 }
-                
-                if(String(match.alliances.red.team_keys[2]).substring(3) == "7197"){
+
+                if (String(match.alliances.red.team_keys[2]).substring(3) == "7197") {
                     q += ",<span style=\"color: white;\">7197</span>"
                 }
-                else{
+                else {
                     q += "," + String(match.alliances.red.team_keys[2]).substring(3)
                 }
-                
+
                 q += "</td>"
 
-                + "<td style=\"color: blue;\">";
-                
-                if(String(match.alliances.blue.team_keys[0]).substring(3) == "7197"){
+                    + "<td style=\"color: blue;\">";
+
+                if (String(match.alliances.blue.team_keys[0]).substring(3) == "7197") {
                     q += "<span style=\"color: white;\">7197</span>"
                 }
-                else{
+                else {
                     q += String(match.alliances.blue.team_keys[0]).substring(3)
                 }
-                
-                if(String(match.alliances.blue.team_keys[1]).substring(3) == "7197"){
+
+                if (String(match.alliances.blue.team_keys[1]).substring(3) == "7197") {
                     q += ",<span style=\"color: white;\">7197</span>"
                 }
-                else{
+                else {
                     q += "," + String(match.alliances.blue.team_keys[1]).substring(3)
                 }
-                
-                if(String(match.alliances.blue.team_keys[2]).substring(3) == "7197"){
+
+                if (String(match.alliances.blue.team_keys[2]).substring(3) == "7197") {
                     q += ",<span style=\"color: white;\">7197</span>"
                 }
-                else{
+                else {
                     q += "," + String(match.alliances.blue.team_keys[2]).substring(3)
                 }
-                
+
                 q += "</td>"
 
-                if(match.alliances.red.score >= 0 && match.alliances.blue.score >= 0){
+                if (match.alliances.red.score >= 0 && match.alliances.blue.score >= 0) {
                     q += "<td>Finished</td>"
-                    
-                    + `<td><span style=\"color: red;\">${match.alliances.red.score}</span>`
 
-                    + `<span style=\"color: blue; margin-left: 25%;\">${match.alliances.blue.score}</span></td>`
+                        + `<td><span style=\"color: red;\">${match.alliances.red.score}</span>`
+
+                        + `<span style=\"color: blue; margin-left: 25%;\">${match.alliances.blue.score}</span></td>`
                 }
-                else{
-                    let estTime = new Date( match.predicted_time *1000);
+                else {
+                    let estTime = new Date(match.predicted_time * 1000);
 
                     q += `<td>${estTime.toLocaleString()}</td>`
-                    
-                    + "<td></td>"
+
+                        + "<td></td>"
                 }
 
                 q += "</tr>";
             }
 
-            else if(match.comp_level == "sf"){
+            else if (match.comp_level == "sf") {
                 sf += "<tr>"
 
                 try {
@@ -149,75 +220,75 @@ async function showMatches(){
 
                 sf += `<td>SF ${match.set_number}</td>`
 
-                + "<td style=\"color: red;\">";
-                
-                if(String(match.alliances.red.team_keys[0]).substring(3) == "7197"){
+                    + "<td style=\"color: red;\">";
+
+                if (String(match.alliances.red.team_keys[0]).substring(3) == "7197") {
                     sf += "<span style=\"color: white;\">7197</span>"
                 }
-                else{
+                else {
                     sf += String(match.alliances.red.team_keys[0]).substring(3)
                 }
-                
-                if(String(match.alliances.red.team_keys[1]).substring(3) == "7197"){
+
+                if (String(match.alliances.red.team_keys[1]).substring(3) == "7197") {
                     sf += ",<span style=\"color: white;\">7197</span>"
                 }
-                else{
+                else {
                     sf += "," + String(match.alliances.red.team_keys[1]).substring(3)
                 }
-                
-                if(String(match.alliances.red.team_keys[2]).substring(3) == "7197"){
+
+                if (String(match.alliances.red.team_keys[2]).substring(3) == "7197") {
                     sf += ",<span style=\"color: white;\">7197</span>"
                 }
-                else{
+                else {
                     sf += "," + String(match.alliances.red.team_keys[2]).substring(3)
                 }
-                
+
                 sf += "</td>"
 
-                + "<td style=\"color: blue;\">";
-                
-                if(String(match.alliances.blue.team_keys[0]).substring(3) == "7197"){
+                    + "<td style=\"color: blue;\">";
+
+                if (String(match.alliances.blue.team_keys[0]).substring(3) == "7197") {
                     sf += "<span style=\"color: white;\">7197</span>"
                 }
-                else{
+                else {
                     sf += String(match.alliances.blue.team_keys[0]).substring(3)
                 }
-                
-                if(String(match.alliances.blue.team_keys[1]).substring(3) == "7197"){
+
+                if (String(match.alliances.blue.team_keys[1]).substring(3) == "7197") {
                     sf += ",<span style=\"color: white;\">7197</span>"
                 }
-                else{
+                else {
                     sf += "," + String(match.alliances.blue.team_keys[1]).substring(3)
                 }
-                
-                if(String(match.alliances.blue.team_keys[2]).substring(3) == "7197"){
+
+                if (String(match.alliances.blue.team_keys[2]).substring(3) == "7197") {
                     sf += ",<span style=\"color: white;\">7197</span>"
                 }
-                else{
+                else {
                     sf += "," + String(match.alliances.blue.team_keys[2]).substring(3)
                 }
-                
+
                 sf += "</td>"
 
-                if(match.alliances.red.score >= 0 && match.alliances.blue.score >= 0){
+                if (match.alliances.red.score >= 0 && match.alliances.blue.score >= 0) {
                     sf += "<td>Finished</td>"
-                    
-                    + `<td><span style=\"color: red;\">${match.alliances.red.score}</span>`
 
-                    + `<span style=\"color: blue; margin-left: 25%;\">${match.alliances.blue.score}</span></td>`
+                        + `<td><span style=\"color: red;\">${match.alliances.red.score}</span>`
+
+                        + `<span style=\"color: blue; margin-left: 25%;\">${match.alliances.blue.score}</span></td>`
                 }
-                else{
-                    let estTime = new Date( match.predicted_time *1000);
+                else {
+                    let estTime = new Date(match.predicted_time * 1000);
 
                     sf += `<td>${estTime.toLocaleString()}</td>`
-                    
-                    + "<td></td>"
+
+                        + "<td></td>"
                 }
 
                 sf += "</tr>";
             }
 
-            else if(match.comp_level == "f"){
+            else if (match.comp_level == "f") {
                 f += "<tr>"
 
                 try {
@@ -225,72 +296,72 @@ async function showMatches(){
                 } catch (error) {
                     f += "<td></td>"
                 }
-                
+
                 f += `<td>F ${match.match_number}</td>`
 
-                + "<td style=\"color: red;\">";
-                
-                if(String(match.alliances.red.team_keys[0]).substring(3) == "7197"){
+                    + "<td style=\"color: red;\">";
+
+                if (String(match.alliances.red.team_keys[0]).substring(3) == "7197") {
                     f += "<span style=\"color: white;\">7197</span>"
                 }
-                else{
+                else {
                     f += String(match.alliances.red.team_keys[0]).substring(3)
                 }
-                
-                if(String(match.alliances.red.team_keys[1]).substring(3) == "7197"){
+
+                if (String(match.alliances.red.team_keys[1]).substring(3) == "7197") {
                     f += ",<span style=\"color: white;\">7197</span>"
                 }
-                else{
+                else {
                     f += "," + String(match.alliances.red.team_keys[1]).substring(3)
                 }
-                
-                if(String(match.alliances.red.team_keys[2]).substring(3) == "7197"){
+
+                if (String(match.alliances.red.team_keys[2]).substring(3) == "7197") {
                     f += ",<span style=\"color: white;\">7197</span>"
                 }
-                else{
+                else {
                     f += "," + String(match.alliances.red.team_keys[2]).substring(3)
                 }
-                
+
                 f += "</td>"
 
-                + "<td style=\"color: blue;\">";
-                
-                if(String(match.alliances.blue.team_keys[0]).substring(3) == "7197"){
+                    + "<td style=\"color: blue;\">";
+
+                if (String(match.alliances.blue.team_keys[0]).substring(3) == "7197") {
                     f += "<span style=\"color: white;\">7197</span>"
                 }
-                else{
+                else {
                     f += String(match.alliances.blue.team_keys[0]).substring(3)
                 }
-                
-                if(String(match.alliances.blue.team_keys[1]).substring(3) == "7197"){
+
+                if (String(match.alliances.blue.team_keys[1]).substring(3) == "7197") {
                     f += ",<span style=\"color: white;\">7197</span>"
                 }
-                else{
+                else {
                     f += "," + String(match.alliances.blue.team_keys[1]).substring(3)
                 }
-                
-                if(String(match.alliances.blue.team_keys[2]).substring(3) == "7197"){
+
+                if (String(match.alliances.blue.team_keys[2]).substring(3) == "7197") {
                     f += ",<span style=\"color: white;\">7197</span>"
                 }
-                else{
+                else {
                     f += "," + String(match.alliances.blue.team_keys[2]).substring(3)
                 }
-                
+
                 f += "</td>"
 
-                if(match.alliances.red.score >= 0 && match.alliances.blue.score >= 0){
+                if (match.alliances.red.score >= 0 && match.alliances.blue.score >= 0) {
                     f += "<td>Finished</td>"
-                    
-                    + `<td><span style=\"color: red;\">${match.alliances.red.score}</span>`
 
-                    + `<span style=\"color: blue; margin-left: 25%;\">${match.alliances.blue.score}</span></td>`
+                        + `<td><span style=\"color: red;\">${match.alliances.red.score}</span>`
+
+                        + `<span style=\"color: blue; margin-left: 25%;\">${match.alliances.blue.score}</span></td>`
                 }
-                else{
-                    let estTime = new Date( match.predicted_time *1000);
+                else {
+                    let estTime = new Date(match.predicted_time * 1000);
 
                     f += `<td>${estTime.toLocaleString()}</td>`
-                    
-                    + "<td></td>"
+
+                        + "<td></td>"
                 }
 
                 f += "</tr>";
